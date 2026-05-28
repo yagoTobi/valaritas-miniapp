@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker</title>
+  
+  <!-- Open Graph for Telegram link preview -->
+  <meta property="og:title" content="🔥 Habit Streak">
+  <meta property="og:description" content="Track your daily progress">
+  <meta property="og:image" content="https://yagotobi.github.io/valaritas-miniapp/habits/preview.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:type" content="website">
+  
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      width: 100%;
+      max-width: 360px;
+    }
+    
+    .habit-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+    
+    /* Ring Progress */
+    .ring-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 30px;
+    }
+    
+    .ring-svg {
+      transform: rotate(-90deg);
+      width: 200px;
+      height: 200px;
+    }
+    
+    .ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.1);
+      stroke-width: 12;
+    }
+    
+    .ring-progress {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 502;
+      stroke-dashoffset: 502;
+      transition: stroke-dashoffset 1s ease-out;
+    }
+    
+    .ring-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    .streak-number {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .streak-label {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 4px;
+    }
+    
+    /* Week Heatmap */
+    .heatmap-section {
+      margin-top: 20px;
+    }
+    
+    .heatmap-label {
+      font-size: 0.85rem;
+      opacity: 0.5;
+      margin-bottom: 12px;
+    }
+    
+    .heatmap {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .day-label {
+      font-size: 0.7rem;
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+    
+    .day-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .day-box.completed {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+    
+    .day-box.today {
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .day-box .check {
+      opacity: 0;
+      font-size: 1.2rem;
+    }
+    
+    .day-box.completed .check {
+      opacity: 1;
+    }
+    
+    /* Action Button */
+    .action-btn {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(240, 147, 251, 0.4);
+    }
+    
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .action-btn.done {
+      background: rgba(255,255,255,0.1);
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="habit-name" id="habitName">Meditation</div>
+    
+    <div class="ring-container">
+      <svg class="ring-svg" viewBox="0 0 180 180">
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f093fb"/>
+            <stop offset="100%" style="stop-color:#f5576c"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="90" cy="90" r="80"/>
+        <circle class="ring-progress" id="ringProgress" cx="90" cy="90" r="80"/>
+      </svg>
+      <div class="ring-center">
+        <div class="streak-number" id="streakNumber">0</div>
+        <div class="streak-label">day streak</div>
+      </div>
+    </div>
+    
+    <div class="heatmap-section">
+      <div class="heatmap-label">This Week</div>
+      <div class="heatmap" id="heatmap"></div>
+    </div>
+    
+    <button class="action-btn" id="actionBtn">Mark Complete</button>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+    
+    // Parse params
+    const params = new URLSearchParams(window.location.search);
+    const startParam = tg?.initDataUnsafe?.start_param || '';
+    
+    // Parse startapp format: habit_meditation_streak_15_week_1110110
+    let config = {
+      habit: 'Habit',
+      streak: 7,
+      week: '1111111', // 7 days, 1=done, 0=not
+      goal: 30
+    };
+    
+    if (startParam) {
+      const parts = startParam.split('_');
+      for (let i = 0; i < parts.length - 1; i += 2) {
+        if (parts[i] === 'habit') config.habit = decodeURIComponent(parts[i+1]);
+        if (parts[i] === 'streak') config.streak = parseInt(parts[i+1]) || 0;
+        if (parts[i] === 'week') config.week = parts[i+1];
+        if (parts[i] === 'goal') config.goal = parseInt(parts[i+1]) || 30;
+      }
+    }
+    
+    // Also check URL params
+    config.habit = params.get('habit') || config.habit;
+    config.streak = parseInt(params.get('streak')) || config.streak;
+    config.week = params.get('week') || config.week;
+    config.goal = parseInt(params.get('goal')) || config.goal;
+    
+    // Update UI
+    document.getElementById('habitName').textContent = config.habit;
+    document.getElementById('streakNumber').textContent = config.streak;
+    
+    // Ring progress (streak / goal)
+    const progress = Math.min(config.streak / config.goal, 1);
+    const circumference = 2 * Math.PI * 80; // 502
+    const offset = circumference * (1 - progress);
+    setTimeout(() => {
+      document.getElementById('ringProgress').style.strokeDashoffset = offset;
+    }, 100);
+    
+    // Week heatmap
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const today = new Date().getDay(); // 0=Sun, 1=Mon...
+    const todayIdx = today === 0 ? 6 : today - 1; // Convert to Mon=0
+    
+    const heatmap = document.getElementById('heatmap');
+    for (let i = 0; i < 7; i++) {
+      const dayEl = document.createElement('div');
+      dayEl.className = 'day';
+      
+      const label = document.createElement('div');
+      label.className = 'day-label';
+      label.textContent = days[i];
+      
+      const box = document.createElement('div');
+      box.className = 'day-box';
+      if (config.week[i] === '1') box.classList.add('completed');
+      if (i === todayIdx) box.classList.add('today');
+      
+      const check = document.createElement('span');
+      check.className = 'check';
+      check.textContent = '✓';
+      box.appendChild(check);
+      
+      dayEl.appendChild(label);
+      dayEl.appendChild(box);
+      heatmap.appendChild(dayEl);
+      
+      // Click to toggle
+      box.addEventListener('click', () => {
+        box.classList.toggle('completed');
+        if (tg?.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred('light');
+        }
+      });
+    }
+    
+    // Action button
+    const btn = document.getElementById('actionBtn');
+    const todayDone = config.week[todayIdx] === '1';
+    if (todayDone) {
+      btn.textContent = '✓ Done Today';
+      btn.classList.add('done');
+    }
+    
+    btn.addEventListener('click', () => {
+      if (!btn.classList.contains('done')) {
+        btn.textContent = '✓ Done Today';
+        btn.classList.add('done');
+        
+        // Mark today in heatmap
+        const todayBox = heatmap.children[todayIdx].querySelector('.day-box');
+        todayBox.classList.add('completed');
+        
+        // Update streak
+        config.streak++;
+        document.getElementById('streakNumber').textContent = config.streak;
+        
+        // Update ring
+        const newProgress = Math.min(config.streak / config.goal, 1);
+        const newOffset = circumference * (1 - newProgress);
+        document.getElementById('ringProgress').style.strokeDashoffset = newOffset;
+        
+        if (tg?.HapticFeedback) {
+          tg.HapticFeedback.notificationOccurred('success');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
