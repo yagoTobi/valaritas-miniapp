@@ -5,12 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Habit Tracker</title>
   
-  <!-- Open Graph for Telegram link preview -->
   <meta property="og:title" content="🔥 Habit Streak">
   <meta property="og:description" content="Track your daily progress">
-  <meta property="og:image" content="https://yagotobi.github.io/valaritas-miniapp/habits/preview.png">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
   <meta property="og:type" content="website">
   
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -28,51 +24,60 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: white;
+      background: linear-gradient(135deg, #FDF6E3 0%, #FFF8E7 100%);
+      color: #5D4E37;
       padding: 20px;
     }
     
     .container {
-      text-align: center;
       width: 100%;
-      max-width: 360px;
+      max-width: 400px;
     }
     
     .habit-name {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      margin-bottom: 30px;
-      opacity: 0.9;
+      margin-bottom: 20px;
+      opacity: 0.8;
+      text-align: center;
     }
     
-    /* Ring Progress */
+    /* Top section: Ring + Message side by side */
+    .top-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    /* Ring Progress - Left side */
     .ring-container {
       position: relative;
-      width: 200px;
-      height: 200px;
-      margin: 0 auto 30px;
+      width: 140px;
+      height: 140px;
+      flex-shrink: 0;
     }
     
     .ring-svg {
       transform: rotate(-90deg);
-      width: 200px;
-      height: 200px;
+      width: 140px;
+      height: 140px;
     }
     
     .ring-bg {
       fill: none;
-      stroke: rgba(255,255,255,0.1);
-      stroke-width: 12;
+      stroke: rgba(210, 180, 140, 0.3);
+      stroke-width: 10;
     }
     
     .ring-progress {
       fill: none;
       stroke: url(#gradient);
-      stroke-width: 12;
+      stroke-width: 10;
       stroke-linecap: round;
-      stroke-dasharray: 502;
-      stroke-dashoffset: 502;
+      stroke-dasharray: 352;
+      stroke-dashoffset: 352;
       transition: stroke-dashoffset 1s ease-out;
     }
     
@@ -85,36 +90,61 @@
     }
     
     .streak-number {
-      font-size: 3.5rem;
+      font-size: 2.8rem;
       font-weight: 700;
       line-height: 1;
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: linear-gradient(135deg, #F5A623 0%, #E85D04 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     
     .streak-label {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       opacity: 0.6;
-      margin-top: 4px;
+      margin-top: 2px;
     }
     
-    /* Week Heatmap */
+    /* Motivational Message - Right side */
+    .message-section {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .motivational-message {
+      font-size: 1.1rem;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #8B5A2B;
+      margin-bottom: 8px;
+    }
+    
+    .motivational-sub {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      line-height: 1.3;
+    }
+    
+    /* Week Heatmap - Below */
     .heatmap-section {
-      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 2px 12px rgba(139, 90, 43, 0.08);
     }
     
     .heatmap-label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       opacity: 0.5;
       margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .heatmap {
       display: flex;
-      justify-content: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 6px;
     }
     
     .day {
@@ -122,19 +152,22 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      flex: 1;
     }
     
     .day-label {
       font-size: 0.7rem;
       opacity: 0.5;
       text-transform: uppercase;
+      font-weight: 500;
     }
     
     .day-box {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 42px;
+      border-radius: 10px;
+      background: rgba(210, 180, 140, 0.2);
       transition: all 0.3s ease;
       cursor: pointer;
       display: flex;
@@ -143,17 +176,18 @@
     }
     
     .day-box.completed {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+      background: linear-gradient(135deg, #F5A623 0%, #E85D04 100%);
+      box-shadow: 0 3px 12px rgba(245, 166, 35, 0.35);
     }
     
     .day-box.today {
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid #E85D04;
     }
     
     .day-box .check {
       opacity: 0;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      color: white;
     }
     
     .day-box.completed .check {
@@ -162,25 +196,27 @@
     
     /* Action Button */
     .action-btn {
-      margin-top: 30px;
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      margin-top: 24px;
+      width: 100%;
+      background: linear-gradient(135deg, #F5A623 0%, #E85D04 100%);
       color: white;
       border: none;
       padding: 16px 40px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       border-radius: 50px;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(240, 147, 251, 0.4);
+      box-shadow: 0 4px 20px rgba(245, 166, 35, 0.4);
     }
     
     .action-btn:active {
-      transform: scale(0.95);
+      transform: scale(0.97);
     }
     
     .action-btn.done {
-      background: rgba(255,255,255,0.1);
+      background: rgba(139, 90, 43, 0.15);
+      color: #8B5A2B;
       box-shadow: none;
     }
   </style>
@@ -189,23 +225,33 @@
   <div class="container">
     <div class="habit-name" id="habitName">Meditation</div>
     
-    <div class="ring-container">
-      <svg class="ring-svg" viewBox="0 0 180 180">
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#f093fb"/>
-            <stop offset="100%" style="stop-color:#f5576c"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring-bg" cx="90" cy="90" r="80"/>
-        <circle class="ring-progress" id="ringProgress" cx="90" cy="90" r="80"/>
-      </svg>
-      <div class="ring-center">
-        <div class="streak-number" id="streakNumber">0</div>
-        <div class="streak-label">day streak</div>
+    <div class="top-section">
+      <!-- Ring on the left -->
+      <div class="ring-container">
+        <svg class="ring-svg" viewBox="0 0 126 126">
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#F5A623"/>
+              <stop offset="100%" style="stop-color:#E85D04"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="63" cy="63" r="56"/>
+          <circle class="ring-progress" id="ringProgress" cx="63" cy="63" r="56"/>
+        </svg>
+        <div class="ring-center">
+          <div class="streak-number" id="streakNumber">0</div>
+          <div class="streak-label">day streak</div>
+        </div>
+      </div>
+      
+      <!-- Message on the right -->
+      <div class="message-section">
+        <div class="motivational-message" id="motivationalMessage">Keep going!</div>
+        <div class="motivational-sub" id="motivationalSub">You're building something powerful.</div>
       </div>
     </div>
     
+    <!-- Heatmap below -->
     <div class="heatmap-section">
       <div class="heatmap-label">This Week</div>
       <div class="heatmap" id="heatmap"></div>
@@ -221,15 +267,31 @@
       tg.expand();
     }
     
+    // Motivational messages based on streak
+    const messages = [
+      { min: 0, max: 0, msg: "Day one starts now", sub: "Every master was once a disaster." },
+      { min: 1, max: 2, msg: "You've started!", sub: "The hardest part is behind you." },
+      { min: 3, max: 6, msg: "Building momentum", sub: "Consistency beats intensity." },
+      { min: 7, max: 13, msg: "One week strong 💪", sub: "You're proving something to yourself." },
+      { min: 14, max: 20, msg: "Two weeks in!", sub: "This is becoming who you are." },
+      { min: 21, max: 29, msg: "Habit forming", sub: "21 days — science says you're rewiring." },
+      { min: 30, max: 59, msg: "One month!", sub: "You've done what most never will." },
+      { min: 60, max: 89, msg: "Unstoppable", sub: "Two months of discipline." },
+      { min: 90, max: Infinity, msg: "Legendary", sub: "You are the habit now." }
+    ];
+    
+    function getMessage(streak) {
+      return messages.find(m => streak >= m.min && streak <= m.max) || messages[0];
+    }
+    
     // Parse params
     const params = new URLSearchParams(window.location.search);
     const startParam = tg?.initDataUnsafe?.start_param || '';
     
-    // Parse startapp format: habit_meditation_streak_15_week_1110110
     let config = {
       habit: 'Habit',
-      streak: 7,
-      week: '1111111', // 7 days, 1=done, 0=not
+      streak: 0,
+      week: '0000000',
       goal: 30
     };
     
@@ -243,7 +305,6 @@
       }
     }
     
-    // Also check URL params
     config.habit = params.get('habit') || config.habit;
     config.streak = parseInt(params.get('streak')) || config.streak;
     config.week = params.get('week') || config.week;
@@ -253,9 +314,14 @@
     document.getElementById('habitName').textContent = config.habit;
     document.getElementById('streakNumber').textContent = config.streak;
     
-    // Ring progress (streak / goal)
+    // Update motivational message
+    const msgData = getMessage(config.streak);
+    document.getElementById('motivationalMessage').textContent = msgData.msg;
+    document.getElementById('motivationalSub').textContent = msgData.sub;
+    
+    // Ring progress (r=56, circumference = 2*PI*56 ≈ 352)
+    const circumference = 2 * Math.PI * 56;
     const progress = Math.min(config.streak / config.goal, 1);
-    const circumference = 2 * Math.PI * 80; // 502
     const offset = circumference * (1 - progress);
     setTimeout(() => {
       document.getElementById('ringProgress').style.strokeDashoffset = offset;
@@ -263,8 +329,8 @@
     
     // Week heatmap
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const today = new Date().getDay(); // 0=Sun, 1=Mon...
-    const todayIdx = today === 0 ? 6 : today - 1; // Convert to Mon=0
+    const today = new Date().getDay();
+    const todayIdx = today === 0 ? 6 : today - 1;
     
     const heatmap = document.getElementById('heatmap');
     for (let i = 0; i < 7; i++) {
@@ -289,7 +355,6 @@
       dayEl.appendChild(box);
       heatmap.appendChild(dayEl);
       
-      // Click to toggle
       box.addEventListener('click', () => {
         box.classList.toggle('completed');
         if (tg?.HapticFeedback) {
@@ -311,15 +376,17 @@
         btn.textContent = '✓ Done Today';
         btn.classList.add('done');
         
-        // Mark today in heatmap
         const todayBox = heatmap.children[todayIdx].querySelector('.day-box');
         todayBox.classList.add('completed');
         
-        // Update streak
         config.streak++;
         document.getElementById('streakNumber').textContent = config.streak;
         
-        // Update ring
+        // Update message
+        const newMsgData = getMessage(config.streak);
+        document.getElementById('motivationalMessage').textContent = newMsgData.msg;
+        document.getElementById('motivationalSub').textContent = newMsgData.sub;
+        
         const newProgress = Math.min(config.streak / config.goal, 1);
         const newOffset = circumference * (1 - newProgress);
         document.getElementById('ringProgress').style.strokeDashoffset = newOffset;
